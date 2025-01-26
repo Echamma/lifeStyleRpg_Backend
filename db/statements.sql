@@ -1,0 +1,15 @@
+CREATE TABLE tasks (
+    task_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+    user_id INTEGER NOT NULL,
+    title VARCHAR(50) NOT NULL,
+    description TEXT NOT NULL,
+    exp INTEGER NOT NULL,
+    status BOOLEAN NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users(user_id)
+);
+DROP TABLE users;
+CREATE TABLE users(
+    user_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+    username VARCHAR(50) NOT NULL UNIQUE,
+    passHash TEXT NOT NULL
+)
