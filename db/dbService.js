@@ -37,7 +37,7 @@ const dbService = (database) =>{
             
         try
         {
-            db.prepare(tryingToGetUser).get(username)
+            const user = db.prepare(tryingToGetUser).get(username)
             if(user){
                 console.log("User already Exists");
                 return;
@@ -52,13 +52,36 @@ const dbService = (database) =>{
             console.error('Database error:',error)
         }
     }
+    const checkUser = async (username, password) =>
+    {
+        const checkUsername = 'SELECT * FROM users WHERE username = ? AND passHash = ?'
+        try{
+            const user = db.prepare(checkUsername).get(username,password)
+            console.log(user)
+            if(user)
+            {
+                console.log("returning true")
+                return true
+            }
+            return false
+        }
+        catch(error)
+        {
+            console.log(error)
+            return false
+        }
+    }
+
+
+
     return {
         insertTask,
         getTasks,
         getUser ,
         deleteTask,
         insertUser,
-        updateTaskStatus
+        updateTaskStatus,
+        checkUser
     };
 }
 

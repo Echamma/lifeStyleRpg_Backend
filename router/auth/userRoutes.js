@@ -9,7 +9,7 @@ const dbUser = dbService(db)
 userRouter.get('/', (req,res)=>{
     console.log(req.query.id)
     const user = dbUser.getUser(req.query.id);
-    res.send(user)
+    res.json(user)
 });
 userRouter.post('/addUser' , async (req,res)=>{ // this is /user/addUser
     const newUser = req.body;
@@ -26,5 +26,14 @@ userRouter.post('/addUser' , async (req,res)=>{ // this is /user/addUser
       }
 
 });
+userRouter.get('/checkUser', async (req,res) => {
+    try {
+        const result = await dbUser.checkUser(req.query.username, req.query.password)
+        res.json({ "check": result })
+    } catch(error) {
+        console.error(error)
+        res.status(500).json({ "check": false, "error": "Server error" })
+    }
+})
 
 export default userRouter;
