@@ -6,17 +6,17 @@ const taskRouter = express.Router();
 
 const dbUser = dbService(db)
 
-taskRouter.get('/', async (req,res)=>{ // To be fixed
+taskRouter.get('/', async (req,res)=>{
     console.log(req.query.id)
     const tasks = await dbUser.getTasks(req.query.id);
     res.json(tasks)
 });
-taskRouter.post('/addTask' , async (req,res)=>{ // this is /user/addUser
+taskRouter.post('/addTask' , async (req,res)=>{ 
     const newTask = req.body;
     console.log(newTask);
     try {
         dbUser.insertTask(newTask.user_id, newTask.title, newTask.description, newTask.exp);
-        res.status(200).send('User added successfully');
+        res.status(200).send('Task added successfully');
       }  
     catch (err) {
         console.log(err);
@@ -35,5 +35,14 @@ taskRouter.post("/deleteTask", async(req,res)=>
     await dbUser.deleteTask(req.body.id)
     res.status(200).send('statusUpdated')
 });
-
+taskRouter.post('/addExp', async (req, res) => {
+    console.log(req.body.exp);
+    try {
+      await dbUser.addExp(req.body.exp, req.body.user_id, req.body.task_id);
+      res.status(200).send("EXP UPDATE");
+    } catch (error) {
+      console.error(error);
+      res.status(500).send("Server error");
+    }
+  });
 export default taskRouter;

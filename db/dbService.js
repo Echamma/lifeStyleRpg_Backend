@@ -1,5 +1,5 @@
 import betterSqlite3 from 'better-sqlite3';
-
+import bcrypt from 'bcrypt'
 const db = betterSqlite3('./db/database.db');
 
 const dbService = (database) =>{
@@ -25,7 +25,7 @@ const dbService = (database) =>{
         const user = db.prepare(sql).get(id)
         return user
     }
-    const deleteTask =async (id) =>
+    const deleteTask = async (id) =>
     {
         const sql = 'DELETE FROM tasks WHERE task_id = ?'
         const user = await db.prepare(sql).run(id)
@@ -54,27 +54,36 @@ const dbService = (database) =>{
     }
     const checkUser = async (username, password) =>
     {
-        const checkUsername = 'SELECT * FROM users WHERE username = ? AND passHash = ?'
+        const checkUsername = 'SELECT * FROM users WHERE username = ?'
         try{
-            const user = db.prepare(checkUsername).get(username,password)
-            console.log(user)
+            const user = db.prepare(checkUsername).get(username)
             if(user)
             {
+                if(!bcrypt.compare(password, user.passHash))
+                {return false}
                 console.log("returning true")
-                return true
+                return user.user_id
             }
-            return false
+            return 'false'
         }
         catch(error)
         {
             console.log(error)
-            return false
+            return 'false'
         }
     }
-
+    const addExp = async(exp, user_id,task_id) =>
+        {
+            const sql = 'UPDATE users SET exp = exp + ? WHERE user_id=?'
+            
+            await db.prepare(sql).run(exp,user_id)
+            console.log("exp added")
+            deleteTask(task_id)
+        } 
 
 
     return {
+        addExp,
         insertTask,
         getTasks,
         getUser ,
